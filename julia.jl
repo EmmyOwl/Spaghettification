@@ -1,30 +1,32 @@
+using Base: Int16
 using LinearAlgebra
-#= function abbild(p):
-    # if p is in the picture of the camera
-    if :
-    
-    # if p is not in the picture of the camera
-    else:
-        return nothing
-    =#
-    
-    function lineplanecollision(planenorm::Vector, planepnt::Vector, pVector::Vector, origin::Vector)
-        ndotu = dot(planenorm, pVector)
-        if ndotu ≈ 0 error("no intersection or line is within plane") end
-     
-        w  = origin - planepnt
-        si = -dot(planenorm, w) / ndotu
-        ψ  = w .+ si .* pVector .+ planepnt
-        return ψ
-    end
-     
+
+function abbild(p)
     # Define plane
-    planenorm = Float64[0, 0, 1]
-    planepnt  = Float64[0, 0, 250]
-     
+    planeNorm = [0,0,1]
+    planePnt = [0,0,250]
+
     # Define ray
-    pVector = Float64[50, -100, -10]
-    origin = Float64[0,  0, 0]
-     
+    origin = [0,0,0]
+
+    nDotu = dot(planeNorm, p)
+    originPlaneDistance  = origin - planePnt
+    si = -dot(planeNorm, originPlaneDistance) / nDotu
+    intersect = originPlaneDistance .+ si .* p .+ planePnt
+    # if p is in the picture of the camera
+    if (intersect[1] <= 250 && intersect[1] >= -250) && (intersect[2] <= 250 && intersect[2] >= -250)
+        return (floor(Int16,intersect[1]),floor(Int16,intersect[2]))
+     # if p is not in the picture of the camera
+    else
+        return nothing
+    end
+end
+    
+#=
     ψ = lineplanecollision(planenorm, planepnt, pVector, origin)
     println("Intersection at $ψ")
+=#
+
+    p = [50,75,100]
+    result = abbild(p)
+    println(result)

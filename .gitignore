@@ -1,0 +1,7 @@
+# gitignore file
+
+!.gitignore
+!*.py
+!*.jl
+!*.md
+

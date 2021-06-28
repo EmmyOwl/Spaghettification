@@ -26,7 +26,7 @@ function is_visible(p,m,r)
     isInImage = abbild(p)
     numberOfIntersects = intersectSphere(p,m,r)
     # if p is in the image of the camera and the line segment intersects with the sphere at most in 1 point
-    if  isInImage != nothing && numberOfIntersects == true
+    if  isInImage != nothing && numberOfIntersects == 1
         return true
     # if p is not in the image of the camera or the line segment intersects with the sphere in a 2nd point
     else
@@ -56,7 +56,7 @@ function intersectSphere(p,m,r)
     end
 
     # Case 1: one intersection point
-    if D = 0
+    if D == 0
         solutions = 1
     
     # Case 2: two intersection points
@@ -64,8 +64,18 @@ function intersectSphere(p,m,r)
         solutions = 2
     end
 
-    s_1 = (-b+sqrt(b^2-4*a*c))/(2*a)
-    s_2 = (-b-sqrt(b^2-4*a*c))/(2*a)
+    t_1 = (-b+sqrt(b^2-4*a*c))/(2*a)
+    t_2 = (-b-sqrt(b^2-4*a*c))/(2*a)
+    println(t_1)
+    println(t_2)
+
+    intersect1 = 1 >= round(t_1, digits=3) > t
+    intersect2 = 1 >= round(t_2, digits=3) > t
+    println(intersect1)
+    println(intersect2)
+
+
+    return solutions
 end
 
 ####################################### MAIN #################################################

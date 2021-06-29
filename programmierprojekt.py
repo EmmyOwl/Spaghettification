@@ -1,8 +1,23 @@
-# import pillow
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-# takes b and h as width and heigth of a scanned png
-# daten is a list of 4-tupels containing the RGBA values of each pixel of the png
-# m is a 3-tupel giving the center point of a 2-sphere in R^3
-# dichte
-# returns a list of 250.000 4-tupls of RGBA values
-#def snapshot_sphere(b,h,daten,m,r,dichte):
+import julia
+from PIL import Image
+
+# picture path
+path = "mypic.jpg"
+
+# read picture
+im    = Image.open(path)
+im    = im.convert('RGBA')
+b, h  = im.size
+daten = list(im.getdata())
+
+# define parameters
+# TODO: Make this a terminal interface or GUI
+m      = (0, 0, 0)
+r      = 1
+dichte = 1
+
+# call julia function returning the RBGA data
+Bildebene = snapshot_sphere(b,h,daten,m,r,dichte)

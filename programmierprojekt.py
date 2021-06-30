@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import julia
+from julia import Main as jl
+jl.include("julia.jl")
+
 from PIL import Image
 
 # picture path
@@ -20,4 +22,6 @@ r      = 1
 dichte = 1
 
 # call julia function returning the RBGA data
-Bildebene = snapshot_sphere(b,h,daten,m,r,dichte)
+Bildebene = jl.snapshot_sphere(b,h,daten,m,r,dichte)
+
+print("Bildebene:", len(Bildebene))

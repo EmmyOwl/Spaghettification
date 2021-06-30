@@ -3,11 +3,11 @@ using LinearAlgebra
 
 function abbild(p)
     # Define plane
-    planeNorm = [0,0,1]
-    planePnt = [0,0,250]
+    planeNorm = [0, 0,   1]
+    planePnt  = [0, 0, 250]
 
     # Define ray
-    origin = [0,0,0]
+    origin = [0, 0, 0]
 
     nDotu               = dot(planeNorm, p)
     originPlaneDistance = origin - planePnt
@@ -35,14 +35,22 @@ function is_visible(p, m, r)
 
     # check whether there is a second intersection with the sphere
     a = sum(p .^ 2)
-    b = -2 * (p .* m)
+    b = -2 * sum(p .* m)
     c = sum(m .^ 2) - r ^ 2
     if b^2 - 4*a*c > 0
-        return false
+        if (-b - sqrt(b^2 - 4*a*c)) / (2*a) < 1
+            return false
+        end
     else
         return true
     end
 end
+
+
+function sample(x, y, b, h, m, r, dichte)
+    return nothing
+end
+
 
 function snapshot_sphere(b, h, daten, m, r, dichte)
     # TODO: write function

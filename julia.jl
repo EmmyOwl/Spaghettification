@@ -9,24 +9,42 @@ function abbild(p)
     # Define ray
     origin = [0,0,0]
 
-    nDotu = dot(planeNorm, p)
-    originPlaneDistance  = origin - planePnt
-    si = -dot(planeNorm, originPlaneDistance) / nDotu
-    intersect = originPlaneDistance .+ si .* p .+ planePnt
-    # if p is in the picture of the camera
-    if (intersect[1] <= 250 && intersect[1] >= -250) && (intersect[2] <= 250 && intersect[2] >= -250)
+    nDotu               = dot(planeNorm, p)
+    originPlaneDistance = origin - planePnt
+    si                  = -dot(planeNorm, originPlaneDistance) / nDotu
+    intersect           = originPlaneDistance .+ si .* p .+ planePnt
+
+    # if p is in the picture of the camera return location, else return nothing
+    if abs(intersect[1]) <= 250 && abs(intersect[2]) <= 250
         return (floor(Int16,intersect[1]),floor(Int16,intersect[2]))
-     # if p is not in the picture of the camera
     else
         return nothing
     end
 end
-    
+
 #=
     ψ = lineplanecollision(planenorm, planepnt, pVector, origin)
     println("Intersection at $ψ")
 =#
 
-    p = [50,75,100]
-    result = abbild(p)
-    println(result)
+function is_visible(p, m, r)
+    # check whether p lies within camera frame
+    if abbild(p) == nothing
+        return false
+    end
+
+    # check whether there is a second intersection with the sphere
+    a = sum(p .^ 2)
+    b = -2 * (p .* m)
+    c = sum(m .^ 2) - r ^ 2
+    if b^2 - 4*a*c > 0
+        return false
+    else
+        return true
+    end
+end
+
+function snapshot_sphere(b, h, daten, m, r, dichte)
+    # TODO: write function
+    return daten
+end

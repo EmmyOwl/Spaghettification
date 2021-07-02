@@ -37,8 +37,11 @@ function is_visible(p, m, r)
     a = sum(p .^ 2)
     b = -2 * sum(p .* m)
     c = sum(m .^ 2) - r ^ 2
+    # check if solution is real-valued
     if b^2 - 4*a*c > 0
-        if (-b - sqrt(b^2 - 4*a*c)) / (2*a) < 1
+        # check if second solution is closer to origin (t < 1)
+        # and consider machine accuracy
+        if (-b - sqrt(b^2 - 4*a*c)) / (2*a) < 1 - 1000 * eps()
             return false
         end
     else

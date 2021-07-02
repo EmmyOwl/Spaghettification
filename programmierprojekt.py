@@ -7,7 +7,8 @@ jl.include("julia.jl")
 from PIL import Image
 
 # picture path
-path = "mypic.jpg"
+#path = "mypic.jpg"
+path = input("Input picture path.\n")
 
 # read picture
 im    = Image.open(path)
@@ -16,12 +17,15 @@ b, h  = im.size
 daten = list(im.getdata())
 
 # define parameters
-# TODO: Make this a terminal interface or GUI
-m      = (0, 0, 0)
-r      = 1
-dichte = 1
+#m      = (0, 0, 0)
+#dichte = 1
+#r      = 1
+m      = input("\nInput sphere center as comma-seperated values x,y,z.\n")
+m      = tuple([float(s) for s in m.split(',')])
+r      = input("\nInput value for r.\n")
+dichte = input("\nInput value for dichte.\n")
 
-# call julia function returning the RBGA data
-Bildebene = jl.snapshot_sphere(b,h,daten,m,r,dichte)
+# call julia function returning the RGBA data
+Bildebene = jl.snapshot_sphere(b, h, daten, m, r, dichte)
 
 print("Bildebene:", len(Bildebene))

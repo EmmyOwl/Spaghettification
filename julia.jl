@@ -69,7 +69,7 @@ function snapshot_sphere(b,h,daten,m,r,dichte)
 
     for l in 1:(b*h)
         y = l % b
-        x = abs(Int, l // b)
+        x = floor(Int, l // b)
         
         # get samples and create array of visible pixels
         sample_array  = samples(x,y,b,h,m,r,dichte)

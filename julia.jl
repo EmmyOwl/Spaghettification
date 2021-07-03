@@ -39,9 +39,8 @@ function is_visible(p, m, r)
     c = sum(m .^ 2) - r ^ 2
     # check if solution is real-valued
     if b^2 - 4*a*c > 0
-        # check if second solution is closer to origin (t < 1)
-        # and consider machine accuracy
-        if (-b - sqrt(b^2 - 4*a*c)) / (2*a) < 1 - 1000 * eps()
+        # check if closer solution corresponds to t == 1
+        if abs((-b - sqrt(b^2 - 4*a*c)) / (2*a) - 1) < abs((-b + sqrt(b^2 - 4*a*c)) / (2*a) - 1)
             return false
         end
     else
@@ -56,6 +55,21 @@ end
 
 
 function snapshot_sphere(b, h, daten, m, r, dichte)
+    # create 2D-array of black RGBA tuples
+    bildebene = fill((0, 0, 0, 255), (500, 500))
+
     # TODO: write function
-    return daten
+
+
+    # flatten and return the array
+    flat = fill((0,0,0,0), 500*500)
+    for i = 1:500
+        for j = 1:500
+            flat[(i-1) * 500 + j] = bildebene[i,j]
+        end
+    end
+    return flat
+
+    # flatten and return the array (this flattens the wrong way, I think)
+    #return vcat(bildebene...)
 end

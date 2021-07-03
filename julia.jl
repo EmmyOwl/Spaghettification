@@ -29,7 +29,7 @@ end
 
 function is_visible(p, m, r)
     # check whether p lies within camera frame
-    if abbild(p) == nothing
+    if abbild(p) === nothing
         return false
     end
 
@@ -73,7 +73,7 @@ function snapshot_sphere(b,h,daten,m,r,dichte)
         
         # get samples and create array of visible pixels
         sample_array  = samples(x,y,b,h,m,r,dichte)
-        visible_pixels = map((x) --> is_visible(x.m,r), sample_array)
+        visible_pixels = map((x) --> is_visible(x,m,r), sample_array)
         sample_array = sample_array[visible_pixels]
 
         for p in 1:length(sample_array)

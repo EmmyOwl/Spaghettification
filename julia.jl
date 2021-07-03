@@ -53,7 +53,42 @@ function sample(x, y, b, h, m, r, dichte)
     return nothing
 end
 
+function snapshot_sphere(b,h,daten,m,r,dichte)
+    "
+    b: takes width of image as an integer
+    h: takes height of image as an integer
+    daten: takes a 4-tuple of RGBA values
+    m: takes center of the sphere as 3-tuple
+    r: takes radius of the sphere numerical values
+    dichte: takes number of samples per pixel
 
+    returns projected image as an array of 4-tuples with resolution 500x500
+     "
+    # create projection plane as 500x500 array of RGBA-tuple
+    image_plane = Array{Tuple{Float64,Float64,Float64,Float64}}(undef, 500, 500)
+
+    for l in 1:(b*h)
+        y = l % b
+        x = abs(Int, l // b)
+        
+        # get samples and create array of visible pixels
+        sample_array  = samples(x,y,b,h,m,r,dichte)
+        visible_pixels = map((x) --> is_visible(x.m,r), sample_array)
+        sample_array = sample_array[visible_pixels]
+
+        for p in 1:length(sample_array)
+            x_axis, y_axis = abbild(sample_array[p])
+            mapping_counter[x_axis+249, y_axis+249] +=1
+            previous_value = collect(image_plane[x_axis+249, y_axis+249])
+            current_average = previous_value + (collect(daten[l]-previuous_value)/mapping_counter[x_axis+249, y_axis+249])
+            image_plane[x_axis+249, y_axis+249] = tuple(current_average)
+        end
+    end
+
+    return image_plane
+end
+
+"
 function snapshot_sphere(b, h, daten, m, r, dichte)
     # create 2D-array of black RGBA tuples
     bildebene = fill((0, 0, 0, 255), (500, 500))
@@ -73,3 +108,4 @@ function snapshot_sphere(b, h, daten, m, r, dichte)
     # flatten and return the array (this flattens the wrong way, I think)
     #return vcat(bildebene...)
 end
+"

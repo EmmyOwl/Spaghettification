@@ -67,13 +67,13 @@ function samples(x, y, b, h, m, r, dichte)
             end
         end
         δ += 1/dichte
-        
-    end 
+
+    end
     return punkte
 end
 
 function spherepoint(x, y, b, h)
-    """Converts the points into a form suiting for the function.""" 
+    """Converts the points into a form suiting for the function."""
     return ((x * pi) / h, (y * 2 * pi) / b)
 end
 
@@ -93,22 +93,28 @@ function snapshot_sphere(b,h,daten,m,r,dichte)
 
     returns projected image as an array of 4-tuples with resolution 500x500
      "
+
+    println("imageplane")
     # create image plane as 500x500 array of RGBA-tuple initialized as (0,0,0,250)
     image_plane = Array{Tuple{Float64,Float64,Float64,Float64}}(undef, 500, 500)
 
+    println("mapping counter")
     # initialize an array of zeroes to count mappings from each pixel
-    mapping_counter = zeroes(Int, 500, 500)
+    mapping_counter = zeros(Int, 500, 500)
 
+    println("for loop")
     # iterate over list of pixels of original image to derive x & y cooridnates for each pixel
     for l in 1:(b*h)
         y = l % b
         x = floor(Int, l // b)
-        
+
+        println("sample array")
     # get sample of pixel as 4-tuple (x, y, z, dichte) and filter for visible pixels
         sample_array  = samples(x,y,b,h,m,r,dichte)
-        visible_pixels = map((x) --> is_visible(x,m,r), sample_array)
+        println("mapping")
+        visible_pixels = map((x) -> is_visible(x,m,r), sample_array)
         visible_array = sample_array[visible_pixels]
-    
+
     # iterate over list of visible pixels
     for p in 1:length(visible_array)
 

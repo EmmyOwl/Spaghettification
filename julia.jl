@@ -75,7 +75,7 @@ function samples(x, y, b, h, m, r, dichte)
 end
 
 function spherepoint(x, y, b, h)
-    """Converts the points into a form suiting for the function.""" 
+    """Converts the points into a form suiting for the function."""
     return ((x * pi) / h, (y * 2 * pi) / b)
 end
 

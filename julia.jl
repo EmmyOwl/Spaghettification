@@ -53,14 +53,9 @@ end
 
 function is_visible(p,m,r)
     isInImage = abbild(p)
-    numberOfIntersects = intersectSphere(p,m,r)
-    println(numberOfIntersects)
-    if numberOfIntersects
-        println("aha!")
-        println("stop")
-    end
+    hasOnlyOneIntersect = intersectSphere(p,m,r)
     # if p is in the image of the camera and the line segment intersects with the sphere at most in 1 point
-    if  isInImage !== nothing && numberOfIntersects
+    if  isInImage !== nothing && hasOnlyOneIntersect
         return true
 
     # if p is not in the image of the camera or the line segment intersects with the sphere in a 2nd point
@@ -88,6 +83,7 @@ function intersectSphere(p,m,r)
         if isa(exception, DomainError)
             #solutions = 0
             #println("No solutions")
+            return false
         end
     end
     D = sqrt(b^2-4*a*c)
@@ -103,6 +99,7 @@ function intersectSphere(p,m,r)
 
     t1 = (-b+sqrt(b^2-4*a*c))/(2*a)
     t2 = (-b-sqrt(b^2-4*a*c))/(2*a)
+    """
     @printf("p(%d, %d, %d)\n", p[1], p[2], p[3])
     @printf("t1: %f\n", t1)
     @printf("p1: %d(%d), %d(%d), %d(%d)\n", t1, p[1], t1, p[2], t1, p[3])
@@ -110,17 +107,17 @@ function intersectSphere(p,m,r)
     @printf("t2: %f\n", t2)
     @printf("p2: %d(%d), %d(%d), %d(%d)\n", t2, p[1], t2, p[2], t2, p[3])
     @printf("p2: %d, %d, %d\n", (t2*(p[1])), (t2*(p[2])), (t2*(p[3])))
-
+    """
     intersect1 = 1 >= round(t1, digits=3) > t
     intersect2 = 1 >= round(t2, digits=3) > t
-    println(intersect1)
-    println(intersect2)
     if intersect1 && intersect2
         return false
     elseif intersect1
         return true
     elseif intersect2
         return true
+    else
+        return false
     end
 end
 
@@ -179,11 +176,11 @@ function snapshot_sphere(b,h,daten,m,r,dichte)
 
     println("Next, Start iterating through empty pixel array to get x,y")
     # iterate over list of pixels of original image to derive x & y cooridnates for each pixel
-    for l in 0:(b*h-1)
+    for l in 1:(b*h)
         y = l % b
         x = floor(Int, l // b)
-        @printf("p%d: (%d,%d)", l, x, y)
-        @printf("\n")
+        #@printf("p%d: (%d,%d)", l, x, y)
+        #@printf("\n")
        # println("get coordinates from pixel and Dichte as 4-tuple")
     # get sample of pixel as 3-tuple (x, y, z) and filter for visible pixels
         sample_array  = samples(x,y,b,h,m,r,dichte)
@@ -193,32 +190,29 @@ function snapshot_sphere(b,h,daten,m,r,dichte)
         #println("\n")
         #println(visible_pixels)
         visible_array = sample_array[visible_pixels]
-        println("stop at breakpoint")
 
     # iterate over list of visible pixels
         for p in 1:length(visible_array)
         # get coordinates of intersection with image plane at (x, y, 250) and assign to individual variables
             x_axis, y_axis = abbild(visible_array[p])
         # offset x and y axes to center the image orthogonal to the z axis
-            x_axes += 249
-            y_axes += 249
+            x_axis += 249
+            y_axis += 249
         # counts number of mappings from sphere to image plane for each pixel
             mapping_counter[x_axis, y_axis] +=1
         # collect RGBA value of the pixel p at (x,y) in original image into an array
             previous_value = collect(image_plane[x_axis, y_axis])
         # calculate cumulative average of RGBA values of pixels mapped to the same pixel on image plane
-            current_average = previous_value + (collect(daten[l]-previuous_value)/mapping_counter[x_axis, y_axis])
+            current_average = previous_value + (collect(daten[l])-previous_value)/mapping_counter[x_axis, y_axis]
         # update the image plane with the current average RGBA value of pixel p
             image_plane[x_axis, y_axis] = tuple(current_average...)
-            println("End inside loop")
-
         end
     end
-
+    println("######### IMAGE PLANE COMPLETE #########")
     return image_plane
 end
 
-
+"""
 h = 5
 b = 5
 daten = [(0,100,200, 250), (0,100,200, 250), (0,100,200, 250), (0,100,200, 250), (0,100,200, 250), 
@@ -231,3 +225,4 @@ r = 3
 dichte = 100
 
 snapshot_sphere(b,h,daten,m,r,dichte)
+"""

@@ -1,5 +1,6 @@
 using Base: Int16
 using LinearAlgebra
+using Printf
 
 function abbild(p)
     # Define plane
@@ -69,6 +70,7 @@ function samples(x, y, b, h, m, r, dichte)
         δ += 1/dichte
         
     end 
+    #@printf("punkte: p%d", punkte)
     return punkte
 end
 
@@ -93,64 +95,65 @@ function snapshot_sphere(b,h,daten,m,r,dichte)
 
     returns projected image as an array of 4-tuples with resolution 500x500
      "
-    # create image plane as 500x500 array of RGBA-tuple initialized as (0,0,0,250)
+    println("Start by creating image plane array")
+     # create image plane as 500x500 array of RGBA-tuple initialized as (0,0,0,250)
     image_plane = Array{Tuple{Float64,Float64,Float64,Float64}}(undef, 500, 500)
-
+    
+    println("Now initialise a counter array to zero")
     # initialize an array of zeroes to count mappings from each pixel
-    mapping_counter = zeroes(Int, 500, 500)
+    mapping_counter = zeros(Int, 500, 500)
 
+    println("Next, Start iterating through empty pixel array to get x,y")
     # iterate over list of pixels of original image to derive x & y cooridnates for each pixel
-    for l in 1:(b*h)
+    for l in 0:(b*h-1)
         y = l % b
         x = floor(Int, l // b)
-        
-    # get sample of pixel as 4-tuple (x, y, z, dichte) and filter for visible pixels
+        @printf("p%d: (%d,%d)", l, x, y)
+        @printf("\n")
+       # println("get coordinates from pixel and Dichte as 4-tuple")
+    # get sample of pixel as 3-tuple (x, y, z) and filter for visible pixels
         sample_array  = samples(x,y,b,h,m,r,dichte)
-        visible_pixels = map((x) --> is_visible(x,m,r), sample_array)
+        #println("mapping boolean result of is_visible to each sample")
+        visible_pixels = map((q) -> is_visible(q,m,r), sample_array)
+        #@printf("x: p%d", x)
+        #println("\n")
+        #println(visible_pixels)
         visible_array = sample_array[visible_pixels]
-    
+        println("stop at breakpoint")
+
     # iterate over list of visible pixels
-    for p in 1:length(visible_array)
+        for p in 1:length(visible_array)
+        # get coordinates of intersection with image plane at (x, y, 250) and assign to individual variables
+            x_axis, y_axis = abbild(visible_array[p])
+        # offset x and y axes to center the image orthogonal to the z axis
+            x_axes += 249
+            y_axes += 249
+        # counts number of mappings from sphere to image plane for each pixel
+            mapping_counter[x_axis, y_axis] +=1
+        # collect RGBA value of the pixel p at (x,y) in original image into an array
+            previous_value = collect(image_plane[x_axis, y_axis])
+        # calculate cumulative average of RGBA values of pixels mapped to the same pixel on image plane
+            current_average = previous_value + (collect(daten[l]-previuous_value)/mapping_counter[x_axis, y_axis])
+        # update the image plane with the current average RGBA value of pixel p
+            image_plane[x_axis, y_axis] = tuple(current_average...)
+            println("End inside loop")
 
-    # get coordinates of intersection with image plane at (x, y, 250) and assign to individual variables
-        x_axis, y_axis = abbild(visible_array[p])
-
-    # offset x and y axes to center the image orthogonal to the z axis
-        x_axes += 249
-        y_axes += 249
-
-    # counts number of mappings from sphere to image plane for each pixel
-        mapping_counter[x_axis, y_axis] +=1
-    # collect RGBA value of the pixel p at (x,y) in original image into an array
-        previous_value = collect(image_plane[x_axis, y_axis])
-    # calculate cumulative average of RGBA values of pixels mapped to the same pixel on image plane
-        current_average = previous_value + (collect(daten[l]-previuous_value)/mapping_counter[x_axis, y_axis])
-    # update the image plane with the current average RGBA value of pixel p
-        image_plane[x_axis, y_axis] = tuple(current_average...)
         end
     end
 
     return image_plane
 end
 
-"
-function snapshot_sphere(b, h, daten, m, r, dichte)
-    # create 2D-array of black RGBA tuples
-    bildebene = fill((0, 0, 0, 255), (500, 500))
 
-    # TODO: write function
+h = 5
+b = 5
+daten = [(0,100,200, 250), (0,100,200, 250), (0,100,200, 250), (0,100,200, 250), (0,100,200, 250), 
+         (200,100,0, 250), (200,100,20, 250), (200,100,40, 250), (200,100,60, 250), (200,100,80, 250), 
+         (0,100,200, 250), (0,100,200, 250), (0,100,200, 250), (0,100,200, 250), (0,100,200, 250), 
+         (200,100,0, 250), (200,100,20, 250), (200,100,40, 250), (200,100,60, 250), (200,100,80, 250),
+         (0,100,200, 250), (0,100,200, 250), (0,100,200, 250), (0,100,200, 250), (0,100,200, 250)]
+m = (0, 0, 300)
+r = 3
+dichte = 100
 
-
-    # flatten and return the array
-    flat = fill((0,0,0,0), 500*500)
-    for i = 1:500
-        for j = 1:500
-            flat[(i-1) * 500 + j] = bildebene[i,j]
-        end
-    end
-    return flat
-
-    # flatten and return the array (this flattens the wrong way, I think)
-    #return vcat(bildebene...)
-end
-"
+snapshot_sphere(b,h,daten,m,r,dichte)

@@ -28,7 +28,7 @@ end
     println("Intersection at $ψ")
 =#
 
-function is_visible(p, m, r)
+"""function is_visible(p, m, r)
     # check whether p lies within camera frame
     if abbild(p) === nothing
         return false
@@ -47,13 +47,87 @@ function is_visible(p, m, r)
     else
         return true
     end
+    return false
+end
+"""
+
+function is_visible(p,m,r)
+    isInImage = abbild(p)
+    numberOfIntersects = intersectSphere(p,m,r)
+    println(numberOfIntersects)
+    if numberOfIntersects
+        println("aha!")
+        println("stop")
+    end
+    # if p is in the image of the camera and the line segment intersects with the sphere at most in 1 point
+    if  isInImage !== nothing && numberOfIntersects
+        return true
+
+    # if p is not in the image of the camera or the line segment intersects with the sphere in a 2nd point
+    else
+        return false
+    end
 end
 
+function intersectSphere(p,m,r)
+    α = p[1]
+    β = p[2]
+    γ = p[3]
+    x0 = m[1]
+    y0 = m[2]
+    z0 = m[3]
+    a = α^2 + β^2 + γ^2
+    b = -2*(α*x0+β*y0+γ*z0)
+    c = (x0^2+y0^2+z0^2-r^2)
+    t = 250/γ
+
+    # catch exeption: if discriminant is negative
+    try
+        sqrt(b^2-4*a*c)
+    catch exception
+        if isa(exception, DomainError)
+            #solutions = 0
+            #println("No solutions")
+        end
+    end
+    D = sqrt(b^2-4*a*c)
+
+    # Case 1: one intersection point
+    if D == 0
+        solutions = 1
+    
+    # Case 2: two intersection points
+    elseif D > 0
+        solutions = 2
+    end
+
+    t1 = (-b+sqrt(b^2-4*a*c))/(2*a)
+    t2 = (-b-sqrt(b^2-4*a*c))/(2*a)
+    @printf("p(%d, %d, %d)\n", p[1], p[2], p[3])
+    @printf("t1: %f\n", t1)
+    @printf("p1: %d(%d), %d(%d), %d(%d)\n", t1, p[1], t1, p[2], t1, p[3])
+    @printf("p1: %d, %d, %d\n", (t1*(p[1])), (t1*(p[2])), (t1*(p[3])))
+    @printf("t2: %f\n", t2)
+    @printf("p2: %d(%d), %d(%d), %d(%d)\n", t2, p[1], t2, p[2], t2, p[3])
+    @printf("p2: %d, %d, %d\n", (t2*(p[1])), (t2*(p[2])), (t2*(p[3])))
+
+    intersect1 = 1 >= round(t1, digits=3) > t
+    intersect2 = 1 >= round(t2, digits=3) > t
+    println(intersect1)
+    println(intersect2)
+    if intersect1 && intersect2
+        return false
+    elseif intersect1
+        return true
+    elseif intersect2
+        return true
+    end
+end
 
 function samples(x, y, b, h, m, r, dichte)
     """Projects a single Pixel onto a specific spot of the sphere and returns an array with the length floor(dichte)^9."""
     point = spherepoint(x, y, b, h)
-    punkte = [spherpointtranslate(point[1], point[2], m, r)]
+    punkte = [spherepointtranslate(point[1], point[2], m, r)]
     #Spraying even more points around the original one, according to "dichte".
     δ = 0 + 1/dichte
     while δ <= 0.5 && δ > 0
@@ -62,7 +136,7 @@ function samples(x, y, b, h, m, r, dichte)
             for p2 in deltavals[2]
                 if 0 <= p1 <= b && 0 <= p2 <= h
                     point = spherepoint(p1, p2, b, h)
-                    newpoint = spherpointtranslate(point[1], point[2], m, r)
+                    newpoint = spherepointtranslate(point[1], point[2], m, r)
                     push!(punkte, newpoint)
                 end
             end
@@ -79,7 +153,7 @@ function spherepoint(x, y, b, h)
     return ((x * pi) / h, (y * 2 * pi) / b)
 end
 
-function spherpointtranslate(x, y, m, r)
+function spherepointtranslate(x, y, m, r)
     """Translates the point into its sphere coordinates."""
     return (m[1] + r * sin(x) * cos(y), m[2] + r * sin(x) * sin(y), m[3] + r * cos(y))
 end

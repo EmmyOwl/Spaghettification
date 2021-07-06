@@ -1,3 +1,14 @@
+"""
+File: programmierprojekt.py
+Authors: Adrian Fried, Richard Schneider, Emmy Schmidt
+Version: 4.1
+Date: 06.07.21
+Name: Sphere Projection
+
+Description: programm to map an PNG image as a texture to a sphere in 3D vector space
+             and take a photo of the sphere from a view point that gets exported to a view file
+"""
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 

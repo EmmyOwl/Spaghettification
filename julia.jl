@@ -1,18 +1,39 @@
+"""
+Authors: Adrian Fried, Richard Schneider, Emmy Schmidt
+Version: 4.1
+Date: 06.07.21
+Name: Sphere Projection
+
+Description: programm to map an PNG image as a texture to a sphere in 3D vector space
+             and take a photo of the sphere from a view point that gets exported to a view file
+"""
+
 using Base: Int16
 using LinearAlgebra
 using Printf
 
+# takes p, a 3-tuple representing a point in 3D- vector space
+# checks if point is within field of view of defined image plane from the origin perspective at (0,0,0)
+# returns a 2-tuple representing the intersection of the vector from the origin to p with the image plane
+# image plane dimensions: (-250 <= x < 250, -250 <= y < 250, z = 250)
+
 function abbild(p)
-    # Define plane
+    # Set plane defined by a normal vector and a point
     planeNorm = [0, 0,   1]
     planePnt  = [0, 0, 250]
 
-    # Define ray
+    # Define ray starting point (in the direction of p)
     origin = [0, 0, 0]
 
-    nDotu               = dot(planeNorm, p)
+    """
+    Dot product vector math to find the intersect of a line and plane
+    in this case the line is the vector from the origin to p and the plane is the image plane
+    as defined above.
+    Dot product: a .* b = |a||b|cos(θ)
+    """
+    nDotp               = dot(planeNorm, p)
     originPlaneDistance = origin - planePnt
-    si                  = -dot(planeNorm, originPlaneDistance) / nDotu
+    si                  = -dot(planeNorm, originPlaneDistance) / nDotp
     intersect           = originPlaneDistance .+ si .* p .+ planePnt
 
     # if p is in the picture of the camera return location, else return nothing

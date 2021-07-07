@@ -75,7 +75,7 @@ end
 function samples(x, y, b, h, m, r, dichte)
     """
     Projects a single Pixel onto a specific spot of the sphere and
-    returns an array with the length floor(dichte)^9.
+    returns an array with the length floor(dichte)*8.
     """
     point = spherepoint(x, y, b, h)
     punkte = [spherepointtranslate(point[1], point[2], m, r)]

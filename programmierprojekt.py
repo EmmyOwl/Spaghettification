@@ -1,12 +1,12 @@
 """
-File: programmierprojekt.py
+File:    programmierprojekt.py
 Authors: Adrian Fried, Richard Schneider, Emmy Schmidt
 Version: 4.1
-Date: 06.07.21
-Name: Sphere Projection
+Date:    06.07.21
+Name:    Sphere Projection
 
-Description: programm to map an PNG image as a texture to a sphere in 3D vector space
-             and take a photo of the sphere from a view point that gets exported to a view file
+Description: Map a PNG image as a texture to a sphere in 3D vector
+             space and take and save a photo of the sphere from a view point.
 """
 
 #!/usr/bin/env python3
@@ -36,12 +36,7 @@ dichte = float(input("\nInput value for dichte.\n"))
 Bildebene = jl.snapshot_sphere(b, h, daten, m, r, dichte)
 
 # flatten the array and convert to integers
-print(type(Bildebene), len(Bildebene[250]), len(Bildebene))
-Bildebene2 = []
-for i in Bildebene:
-    Bildebene2 += i
-
-Bildebene = Bildebene2
+Bildebene = sum(Bildebene, [])
 Bildebene = [tuple([int(v) for v in p]) for p in Bildebene]
 
 # create new image from mapped image data and save as png
@@ -54,4 +49,4 @@ print("\nCreated file newim.png by projecting input picture", \
       path, "onto a sphere with parameters\n"\
         "m      =", m, \
       "\nr      =", r, \
-      "\ndichte =", dichte)
+      "\ndichte =", dichte, "\n\n")
